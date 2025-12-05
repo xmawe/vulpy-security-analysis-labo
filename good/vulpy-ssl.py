@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from flask import Flask, g, redirect, request
+import secrets
 
 from mod_hello import mod_hello
 from mod_user import mod_user
@@ -10,7 +11,8 @@ from mod_mfa import mod_mfa
 import libsession
 
 app = Flask('vulpy')
-app.config['SECRET_KEY'] = 'aaaaaaa'
+# FIXED B105: Use secrets module instead of hardcoded key
+app.config['SECRET_KEY'] = secrets.token_hex(32)
 
 app.register_blueprint(mod_hello, url_prefix='/hello')
 app.register_blueprint(mod_user, url_prefix='/user')
@@ -26,4 +28,5 @@ def do_home():
 def before_request():
     g.session = libsession.load(request)
 
-app.run(debug=True, host='127.0.1.1', ssl_context=('/tmp/acme.cert', '/tmp/acme.key'))
+# FIXED B201: Removed debug=True for production security
+app.run(debug=False, host='127.0.1.1', ssl_context=('/tmp/acme.cert', '/tmp/acme.key'))

@@ -1,5 +1,5 @@
 import libuser
-import random
+import secrets
 import hashlib
 import re
 import jwt
@@ -7,7 +7,8 @@ from time import time
 
 from pathlib import Path
 
-secret = 'MYSUPERSECRETKEY'
+# FIXED B105: Use secrets module instead of hardcoded secret
+secret = secrets.token_hex(32)
 not_after = 60 # 1 minute
 
 def keygen(username, password=None, login=True):

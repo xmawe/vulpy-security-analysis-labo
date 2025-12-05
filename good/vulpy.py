@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
+import secrets
 
 from flask import Flask, g, redirect, request
 
@@ -14,7 +15,8 @@ from mod_api import mod_api
 import libsession
 
 app = Flask('vulpy')
-app.config['SECRET_KEY'] = '123aa8a93bdde342c871564a62282af857bda14b3359fde95d0c5e4b321610c1'
+# FIXED B105: Use secrets module to generate random key instead of hardcoded value
+app.config['SECRET_KEY'] = secrets.token_hex(32)
 
 app.register_blueprint(mod_hello, url_prefix='/hello')
 app.register_blueprint(mod_user, url_prefix='/user')
@@ -50,5 +52,6 @@ def add_csp_headers(response):
         response.headers['Content-Security-Policy'] = csp
     return response
 
-app.run(debug=True, host='127.0.1.1', port=5001, extra_files='csp.txt')
+# FIXED B201: Removed debug=True for production security
+app.run(debug=False, host='127.0.1.1', port=5001, extra_files='csp.txt')
 

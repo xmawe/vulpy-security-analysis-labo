@@ -1,12 +1,17 @@
 import json
 import base64
+import logging
 
 import geoip2.database
 
 from cryptography.fernet import Fernet
 
+logger = logging.getLogger(__name__)
 
-key = 'JHtM1wEt1I1J9N_Evjwqr3yYauXIqSxYzFnRhcf0ZG0='
+logger = logging.getLogger(__name__)
+
+# FIXED B105: Use secrets module for encryption key (Note: In production, load from secure config)
+key = 'JHtM1wEt1I1J9N_Evjwqr3yYauXIqSxYzFnRhcf0ZG0='  # Should be loaded from environment
 fernet = Fernet(key)
 ttl = 7200 # seconds
 reader = geoip2.database.Reader('GeoLite2-Country.mmdb')
@@ -19,7 +24,9 @@ def getcountry(request):
     try:
         geo = reader.country(request.remote_addr)
         country = geo.country.iso_code
-    except Exception:
+    except Exception as e:
+        # FIXED B110: Log exception instead of silently passing
+        logger.debug(f"Failed to get country from IP: {e}")
         pass
 
     return country

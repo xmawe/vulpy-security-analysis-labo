@@ -13,7 +13,8 @@ def keygen(username, password=None):
         if not libuser.login(username, password):
             return None
 
-    key = hashlib.sha256(str(random.getrandbits(2048)).encode()).hexdigest()
+    # FIXED B311: Use secrets module instead of random for cryptographic purposes
+    key = hashlib.sha256(str(secrets.randbits(2048)).encode()).hexdigest()
 
     # FIXED B108: Use secure temp directory instead of hardcoded /tmp/
     tmpdir = tempfile.gettempdir()
