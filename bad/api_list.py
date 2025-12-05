@@ -7,7 +7,8 @@ import requests
 @click.argument('username')
 def cmd_api_client(username):
 
-    r = requests.get('http://127.0.1.1:5000/api/post/{}'.format(username))
+    # FIXED B113: Added timeout to prevent hanging requests
+    r = requests.get('http://127.0.1.1:5000/api/post/{}'.format(username), timeout=5)
     if r.status_code != 200:
         click.echo('Some error ocurred. Status Code: {}'.format(r.status_code))
         print(r.text)

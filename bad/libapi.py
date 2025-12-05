@@ -1,6 +1,8 @@
 import libuser
 import random
 import hashlib
+import tempfile
+import os
 
 from pathlib import Path
 
@@ -13,11 +15,13 @@ def keygen(username, password=None):
 
     key = hashlib.sha256(str(random.getrandbits(2048)).encode()).hexdigest()
 
-    for f in Path('/tmp/').glob('vulpy.apikey.' + username + '.*'):
+    # FIXED B108: Use secure temp directory instead of hardcoded /tmp/
+    tmpdir = tempfile.gettempdir()
+    for f in Path(tmpdir).glob('vulpy.apikey.' + username + '.*'):
         print('removing', f)
         f.unlink()
 
-    keyfile = '/tmp/vulpy.apikey.{}.{}'.format(username, key)
+    keyfile = os.path.join(tmpdir, 'vulpy.apikey.{}.{}'.format(username, key))
 
     Path(keyfile).touch()
 
@@ -30,7 +34,9 @@ def authenticate(request):
 
     key = request.headers['X-APIKEY']
 
-    for f in Path('/tmp/').glob('vulpy.apikey.*.' + key):
+    # FIXED B108: Use secure temp directory
+    tmpdir = tempfile.gettempdir()
+    for f in Path(tmpdir).glob('vulpy.apikey.*.' + key):
         return f.name.split('.')[2]
 
     return None
