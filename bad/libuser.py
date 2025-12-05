@@ -52,7 +52,8 @@ def password_change(username, password):
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
 
-    c.execute("UPDATE users SET password = '{}' WHERE username = '{}'".format(password, username))
+    # FIXED B608: Use parameterized query to prevent SQL injection
+    c.execute("UPDATE users SET password = ? WHERE username = ?", (password, username))
     conn.commit()
 
     return True

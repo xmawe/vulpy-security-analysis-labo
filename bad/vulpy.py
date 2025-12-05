@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from flask import Flask, g, redirect, request
+import secrets
 
 import libsession
 from mod_api import mod_api
@@ -13,7 +14,8 @@ from mod_posts import mod_posts
 from mod_user import mod_user
 
 app = Flask('vulpy')
-app.config['SECRET_KEY'] = 'aaaaaaa'
+# FIXED B105: Use secrets module instead of hardcoded key
+app.config['SECRET_KEY'] = secrets.token_hex(32)
 
 app.register_blueprint(mod_hello, url_prefix='/hello')
 app.register_blueprint(mod_user, url_prefix='/user')

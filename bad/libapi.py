@@ -1,5 +1,5 @@
 import libuser
-import random
+import secrets
 import hashlib
 import tempfile
 import os
